@@ -30,7 +30,7 @@ class ConnectServiceProvider extends ServiceProvider {
 		]);
 		
 	 	// Register 'connect'
-	    $this->app['connect'] = $this->app->share(function($app)
+	    $this->app->singleton('connect',function($app)
 	    {
 	        // create Connect instance
         	$connect = new Connect();
