@@ -128,7 +128,14 @@ class Google implements ProviderInterface{
 		$userData['username'] = $userData['first_name'].' '.$userData['last_name'];
 		$userData['name'] = $userData['first_name'].' '.$userData['last_name'];
 		$userData['email'] = $result['emailAddresses'][0]->value;
-		$userData['gender'] = $result['genders'][0]->value;
+		if(count($result['genders']))
+		{
+			$userData['gender'] = $result['genders'][0]->value;
+		}
+		else
+		{
+			$userData['gender'] = 'NA';
+		}
 
 		// dd($userData);
 
