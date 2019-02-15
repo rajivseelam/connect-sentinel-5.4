@@ -3,7 +3,7 @@
 Add to dependencies
 
 	"cartalyst/sentinel": "^2.0",
-    "google/apiclient": "1.0.*@beta",
+    "google/apiclient": "^2.0"
 
 Add to providers
 
@@ -18,10 +18,7 @@ Run: `php artisan vendor:publish`
 Add more columns to users table:
 
 	$table->string('name')->nullable();
-    $table->text('description')->nullable();
     $table->enum('gender', ['male', 'female', 'others'])->nullable();
-    $table->date('birthday')->nullable();
-    $table->text('photo')->nullable();
 
 Extend User model with `Rjvim\Connect\Models\User`
 

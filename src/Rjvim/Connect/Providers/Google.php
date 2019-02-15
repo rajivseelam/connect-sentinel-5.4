@@ -5,6 +5,7 @@ use Google_Client;
 use Request;
 use Redirect;
 use Google_Service_Plus;
+use Google_Service_PeopleService;
 use Rjvim\Connect\Models\OAuthAccount;
 
 class Google implements ProviderInterface{
@@ -83,46 +84,55 @@ class Google implements ProviderInterface{
 	 **/
 	public function getGoogleUserData()
 	{
-		$result = array();
+		// $result = array();
 
-		$plus = new Google_Service_Plus($this->client);
+		// $plus = new Google_Service_Plus($this->client);
 
-		$person = $plus->people->get('me');
+		// $person = $plus->people->get('me');
 
-		if($person->getEmails()[0]->getType() == 'account')
-		{
-			$email = $person->getEmails()[0]->getValue();
-		}
-		else
-		{
-			$email = 'Not Found';
-		}
-
-		$result['uid'] = $person->id;
-
-		// if($this->sentinel->check())
+		// if($person->getEmails()[0]->getType() == 'account')
 		// {
-		// 	$result['email'] = $this->sentinel->getUser()->email;
+		// 	$email = $person->getEmails()[0]->getValue();
 		// }
 		// else
 		// {
-		// 	$result['email'] = $email;
+		// 	$email = 'Not Found';
 		// }
 
-		$result['email'] = $email;
+		// $result['uid'] = $person->id;
+
+		// $result['email'] = $email;
 			
-		$result['first_name'] = $person->getName()->getGivenName();
-		$result['last_name'] = $person->getName()->getFamilyName();
-		$result['username'] = $result['first_name'].' '.$result['last_name'];
-		$result['name'] = $result['first_name'].' '.$result['last_name'];
-		$result['url'] = $person->getUrl();
-		$result['image'] = $person->getImage()->getUrl();
+		// $result['first_name'] = $person->getName()->getGivenName();
+		// $result['last_name'] = $person->getName()->getFamilyName();
+		// $result['username'] = $result['first_name'].' '.$result['last_name'];
+		// $result['name'] = $result['first_name'].' '.$result['last_name'];
+		// $result['url'] = $person->getUrl();
+		// $result['image'] = $person->getImage()->getUrl();
 
-		$result['description'] = $person['aboutMe'];
-		$result['gender'] = $person['gender'];
-		$result['birthday'] = $person['birthday'];
+		// $result['description'] = $person['aboutMe'];
+		// $result['gender'] = $person['gender'];
+		// $result['birthday'] = $person['birthday'];
 
-		return $result;
+		$peopleService = new Google_Service_PeopleService($this->client);
+
+		$optParams = array(
+		  'personFields' => 'names,emailAddresses,genders',
+		);
+
+		$result = $peopleService->people->get('people/me', $optParams);
+
+		$userData = [];
+		$userData['first_name'] = $result['names'][0]->givenName;
+		$userData['last_name'] = $result['names'][0]->familyName;
+		$userData['username'] = $userData['first_name'].' '.$userData['last_name'];
+		$userData['name'] = $userData['first_name'].' '.$userData['last_name'];
+		$userData['email'] = $result['emailAddresses'][0]->value;
+		$userData['gender'] = $result['genders'][0]->value;
+
+		// dd($userData);
+
+		return $userData;
 	}
 
 	/**
@@ -172,11 +182,13 @@ class Google implements ProviderInterface{
 	{
 		$response = $this->client->getAccessToken();
 
+		// dd($response);
+
 		$scope = $this->scopes;
 
 		$actual_response = $response;
 
-		$response = json_decode($response);
+		// $response = json_decode($response);
 
 		$oauth = OAuthAccount::firstOrCreate(
 						array(
@@ -184,28 +196,28 @@ class Google implements ProviderInterface{
 							'provider' => 'google'
 						));
 
-		$oauth->image_url = $gUserData['image'];
-		$oauth->url = $gUserData['url'];
-		$oauth->uid = $gUserData['uid'];
-		$oauth->username = $gUserData['username'];
+		// $oauth->image_url = $gUserData['image'];
+		// $oauth->url = $gUserData['url'];
+		// $oauth->uid = $gUserData['uid'];
+		$oauth->username = $gUserData['name'];
 
-		$oauth->description = $gUserData['description'];
+		// $oauth->description = $gUserData['description'];
 		$oauth->gender = $gUserData['gender'];
-		$oauth->birthday = $gUserData['birthday'];
+		// $oauth->birthday = $gUserData['birthday'];
 
-		$oauth->access_token = $response->access_token;
+		$oauth->access_token = $response['access_token'];
 
-		if(isset($response->refresh_token))
+		if(isset($response['refresh_token']))
 		{
-			$oauth->refresh_token = $response->refresh_token;
+			$oauth->refresh_token = $response['refresh_token'];
 		}
 
-		if(isset($response->created))
+		if(isset($response['created']))
 		{
-			$oauth->created = $response->created;
+			$oauth->created = $response['created'];
 		}
 
-		$oauth->expires_in = $response->expires_in;
+		$oauth->expires_in = $response['expires_in'];
 
 		$oauth->signature = serialize($actual_response);
 
