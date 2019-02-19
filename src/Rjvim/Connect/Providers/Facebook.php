@@ -181,8 +181,10 @@ class Facebook implements ProviderInterface{
 		}
 
 		$result['name'] = $plainOldArray['name'];
-		$result['url'] = $plainOldArray['link'];
-		$result['gender'] = $plainOldArray['gender'];
+		// $result['url'] = $plainOldArray['link'];
+		// $result['gender'] = $plainOldArray['gender'];
+
+		// dd($plainOldArray);
 
 		$oauth_client = $this->client->getOAuth2Client();
 		$token = $oauth_client->getLongLivedAccessToken($accessToken);
@@ -208,9 +210,9 @@ class Facebook implements ProviderInterface{
 							'provider' => 'facebook'
 						));
 
-		$oauth->url = $gUserData['url'];
+		// $oauth->url = $gUserData['url'];
 		$oauth->uid = $gUserData['uid'];
-		$oauth->gender = $gUserData['gender'];
+		// $oauth->gender = $gUserData['gender'];
 
 		$accessToken = $this->client->getDefaultAccessToken();
 
