@@ -237,21 +237,21 @@ class Connect {
 
 			$actual_response = $response;
 
-			$response = json_decode($response);
+			// $response = json_decode($response);
 
-			$oauthAccount->access_token = $response->access_token;
+			$oauthAccount->access_token = $response['access_token'];
 
-			if(isset($response->refresh_token))
+			if(isset($response['refresh_token']))
 			{
-				$oauthAccount->refresh_token = $response->refresh_token;
+				$oauthAccount->refresh_token = $response['refresh_token'];
 			}
 
-			if(isset($response->created))
+			if(isset($response['created']))
 			{
-				$oauthAccount->created = $response->created;
+				$oauthAccount->created = $response['created'];
 			}
 
-			$oauthAccount->expires_in = $response->expires_in;
+			$oauthAccount->expires_in = $response['expires_in'];
 
 			$oauthAccount->signature = serialize($actual_response);
 
