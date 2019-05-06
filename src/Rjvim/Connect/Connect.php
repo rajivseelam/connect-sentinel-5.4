@@ -178,24 +178,37 @@ class Connect {
 			        'password'    => $password
 			    ));
 
-		if(in_array($data['gender'], ['male','female', 'others']))
+		if(isset($data['gender']))
 		{
-			$user->gender = $data['gender'];
+			if(in_array($data['gender'], ['male','female', 'others']))
+			{
+				$user->gender = $data['gender'];
+			}
 		}
 
-		if(isset($data['birthday']) && $data['birthday'])
+
+		if(isset($data['birthday']))
 		{
-			$user->birthday = $data['birthday'];
+			if(isset($data['birthday']) && $data['birthday'])
+			{
+				$user->birthday = $data['birthday'];
+			}
 		}
 
 		if(isset($data['description']))
 		{
-			$user->description = strip_tags($data['description']);
+			if(isset($data['description']))
+			{
+				$user->description = strip_tags($data['description']);
+			}
 		}
 
 		if(isset($data['image']))
 		{
-			$user->photo = $data['image'];
+			if(isset($data['image']))
+			{
+				$user->photo = $data['image'];
+			}
 		}
 
 		$user->save();
